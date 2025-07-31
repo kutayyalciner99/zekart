@@ -1,0 +1,91 @@
+/* NAVBAR & MOBILE MENU STYLES */
+.navbar {
+  position: fixed;
+  top: 0; left: 0; width: 100vw;
+  height: 60px;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2rem;
+  z-index: 3000;
+  box-shadow: 0 2px 16px #0002;
+}
+.logo {
+  color: #fff;
+  font-size: 1.7rem;
+  font-family: 'Playfair Display', serif;
+  font-weight: bold;
+  text-decoration: none;
+  letter-spacing: 0.1em;
+}
+.hamburger-wrapper {
+  cursor: pointer;
+  z-index: 1100;
+}
+
+.hamburger {
+  width: 28px;
+  height: auto;
+}
+.mobile-menu {
+  position: fixed;
+  top: 60px;
+  right: 0;
+  width: 220px;
+  height: calc(100vh - 60px);
+  background: rgba(0,0,0,0.97);
+  transition: transform 0.3s;
+  transform: translateX(100%);
+  z-index: 2100;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 2rem 1.5rem;
+  gap: 1.5rem;
+  box-shadow: -2px 0 16px rgba(0,0,0,0.2);
+}
+.mobile-menu.show {
+  transform: translateX(0);
+}
+/* Mobile Menu */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: 70%;
+  height: 100vh;
+  background: rgba(0, 0, 0, 0.95);
+  backdrop-filter: blur(5px);
+  transition: right 0.4s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1050;
+}
+.mobile-menu ul li {
+  margin: 1.2rem 0;
+}
+.mobile-menu ul li a {
+  color: #fff;
+  font-size: 1.2rem;
+  text-decoration: none;
+  font-family: 'Playfair Display', serif;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  transition: color 0.2s;
+}
+.mobile-menu ul li a:hover {
+  color: #ffb300;
+}
+@media (max-width: 700px) {
+  .navbar {
+    padding: 0 0.7rem;
+  }
+  .mobile-menu {
+    width: 80vw;
+    min-width: 180px;
+    padding: 1.2rem 0.5rem;
+  }
+} 

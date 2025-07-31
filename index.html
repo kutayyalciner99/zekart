@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ZEK.ART</title>
+  <link rel="icon" type="image/png" href="images/favicon.png">
+  <link rel="stylesheet" href="css/style.css">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/css/bootstrap.min.css" rel="stylesheet"
+    integrity="sha384-LN+7fdVzj6u52u30Kp6M/trliBMCMKTyK833zpbD+pXdCLuTusPj697FH4R/5mcr" crossorigin="anonymous">
+  <script defer src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.7/dist/js/bootstrap.min.js"
+    integrity="sha384-7qAoOXltbVP82dhxHAUje59V5r2YsVfBafyUDxEdApLPmcdhBPg1DKg1ERo0BZlK"
+    crossorigin="anonymous"></script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: black;
+      color: white;
+      font-family: 'Playfair Display', serif;
+      overflow-x: hidden;
+    }
+
+    .background-anim {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      z-index: -1;
+      pointer-events: none;
+      opacity: 0.12;
+      will-change: transform;
+    }
+
+    .zekart-grid-overlay {
+      display: none;
+      /* disabled since we use SVG */
+    }
+
+    .center-content {
+      position: relative;
+      z-index: 2;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding-top: 4rem;
+    }
+
+
+    .main-title {
+      font-size: 4rem;
+      font-weight: 700;
+      letter-spacing: 0.15em;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      font-size: 1.5rem;
+      font-style: italic;
+      line-height: 1.6;
+      color: #ccc;
+      max-width: 640px;
+      margin-top: 0.5rem;
+    }
+
+
+    #loader {
+      position: fixed;
+      inset: 0;
+      background: black;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 4rem;
+      z-index: 9999;
+      transition: opacity 0.2s ease;
+    }
+
+    #loader.fade-out {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background: rgba(0, 0, 0, 0.85);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      z-index: 2000;
+    }
+
+    .logo {
+      color: #fff;
+      font-size: 1.7rem;
+      font-weight: bold;
+      text-decoration: none;
+      letter-spacing: 0.1em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      list-style: none;
+      margin: 0;
+    }
+
+    .nav-links li a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 1.1rem;
+      font-weight: 500;
+      transition: color 0.2s;
+    }
+
+    .nav-links li a:hover {
+      color: #ffb300;
+    }
+
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      justify-content: center;
+      gap: 6px;
+      width: 36px;
+      height: 36px;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 2100;
+    }
+
+    .hamburger span {
+      display: block;
+      height: 4px;
+      width: 100%;
+      background: #fff;
+      border-radius: 2px;
+      transition: 0.3s;
+    }
+
+    /* Mobil görünüm */
+    @media (max-width: 900px) {
+      .nav-links {
+        position: fixed;
+        top: 60px;
+        right: 0;
+        background: rgba(0, 0, 0, 0.97);
+        flex-direction: column;
+        width: 220px;
+        height: calc(100vh - 60px);
+        transform: translateX(100%);
+        transition: transform 0.3s;
+        padding: 2rem 1.5rem;
+        gap: 1.5rem;
+        box-shadow: -2px 0 16px rgba(0, 0, 0, 0.2);
+      }
+
+      .nav-links.open {
+        transform: translateX(0);
+      }
+
+      .hamburger {
+        display: flex;
+      }
+    }
+
+    .hero {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      padding: 6rem 3rem 3rem;
+      gap: 3rem;
+    }
+
+    .hero .text h1 {
+      font-size: 4rem;
+      line-height: 1.2;
+      margin-bottom: 1rem;
+    }
+
+    .hero .text p {
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+
+    .hero .image img {
+      max-height: 80vh;
+      max-width: 450px;
+      object-fit: contain;
+      border-radius: 0.5rem;
+    }
+
+    .mobile-menu {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: 70%;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.96);
+      backdrop-filter: blur(5px);
+      transition: right 0.4s ease;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1050;
+    }
+
+    .mobile-menu.show {
+      transform: translateX(0);
+    }
+
+    .mobile-menu ul {
+      list-style: none;
+      padding: 0;
+      text-align: center;
+    }
+
+    .mobile-menu ul li {
+      margin: 2rem 0;
+    }
+
+    .mobile-menu ul li a {
+      color: white;
+      font-size: 1.5rem;
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    /* ==== MASONRY GALLERY ==== */
+
+    .gallery-masonry {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      /* 4 columns */
+      gap: 0;
+      max-width: 1400px;
+      margin: 4rem auto;
+      padding: 0 10px;
+      position: relative;
+    }
+
+    .optimized-image {
+      width: 100%;
+      object-fit: cover;
+      margin: -8px;
+      /* slight overlap */
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .optimized-image.loaded {
+      opacity: 1;
+    }
+
+
+    /* Row 9 – images 33 to 35 centered (columns 2, 3, 4) */
+    .gallery-masonry .optimized-image:nth-child(33) {
+      grid-column: 2;
+    }
+
+    .gallery-masonry .optimized-image:nth-child(34) {
+      grid-column: 3;
+    }
+
+    .gallery-masonry .optimized-image:nth-child(35) {
+      grid-column: 4;
+    }
+
+    /* Row 10 – images 36 to 38 also centered */
+    .gallery-masonry .optimized-image:nth-child(36) {
+      grid-column: 2;
+    }
+
+    .gallery-masonry .optimized-image:nth-child(37) {
+      grid-column: 3;
+    }
+
+    .gallery-masonry .optimized-image:nth-child(38) {
+      grid-column: 4;
+    }
+
+    /* Final row (image 39) centered */
+    .gallery-masonry .optimized-image:nth-child(39) {
+      grid-column: 2 / span 2;
+      /* spans columns 2 and 3 */
+    }
+
+
+    /* Last image - maximum width and full row */
+    .optimized-image:last-child {
+      grid-column: 1 / -1;
+      width: 100%;
+      max-width: 100%;
+      margin: 0;
+      margin-top: 50px;
+      z-index: 1;
+    }
+
+    .gallery-section .optimized-image:hover {
+      transform: scale(1.05);
+      z-index: 10 !important;
+      filter: brightness(1.1);
+      transition: transform 0.8s ease-in, filter 0.8s ease-in !important;
+    }
+
+
+    @keyframes slideUpFadeIn {
+      0% {
+        opacity: 0;
+        transform: translateY(60px);
+      }
+
+      100% {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .gallery-masonry {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      /* 4 columns */
+      gap: 0;
+      max-width: 1400px;
+      margin: 4rem auto;
+      padding: 0 10px;
+      position: relative;
+    }
+
+    .optimized-image {
+      width: 100%;
+      object-fit: cover;
+      margin: -8px;
+      /* slight overlap */
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .optimized-image.loaded {
+      opacity: 1;
+    }
+
+
+    /* Remove all transform-based animation classes */
+    .from-left,
+    .from-right {
+      animation: fadeInMinimal 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+    }
+
+    @keyframes fadeInMinimal {
+      0% {
+        opacity: 0;
+      }
+
+      100% {
+        opacity: 1;
+      }
+    }
+
+    /* Remove sabit hover scaling */
+    .grid-gallery img.sabit:hover,
+    .grid-gallery img.sabit.active {
+      /* No transform or scale */
+      box-shadow: 0 4px 24px 0 rgba(0, 0, 0, 0.22),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
+    }
+
+    /* Minimal puzzle shine effect */
+    .grid-gallery img::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent 60%, rgba(255, 255, 255, 0.08) 80%, transparent 100%);
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+    }
+
+    .grid-gallery img:hover::before {
+      opacity: 1;
+      animation: minimalShine 0.7s linear;
+    }
+
+    @keyframes minimalShine {
+      0% {
+        opacity: 0;
+        transform: translateX(-60%);
+      }
+
+      30% {
+        opacity: 1;
+      }
+
+      100% {
+        opacity: 0;
+        transform: translateX(100%);
+      }
+    }
+
+    /* Remove additional puzzle piece effects */
+    .grid-gallery img::after {
+      display: none;
+    }
+
+    /* Puzzle piece border effect */
+    .grid-gallery img {
+      border: 2px solid transparent;
+      background: linear-gradient(45deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05)) border-box;
+      background-clip: padding-box;
+    }
+
+    .grid-gallery img:hover {
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow:
+        0 4px 24px 0 rgba(0, 0, 0, 0.22),
+        0 0 0 1px rgba(255, 255, 255, 0.1),
+        inset 0 0 20px rgba(255, 255, 255, 0.05);
+    }
+
+    img.large {
+      transform: scale(1.05);
+    }
+
+    @media (max-width: 1200px) {
+      .grid-gallery {
+        column-count: 3;
+      }
+    }
+
+    @media (max-width: 800px) {
+      .grid-gallery {
+        column-count: 2;
+      }
+    }
+
+    @media (max-width: 500px) {
+      .grid-gallery {
+        column-count: 1;
+      }
+    }
+
+    /* ==== BACKGROUND ANIMATION ==== */
+    .star {
+      transition: all 0.2s ease;
+    }
+
+    /* Lightbox/modal */
+    .lightbox-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(20, 20, 20, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .lightbox-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .lightbox-img {
+      max-width: 90vw;
+      max-height: 85vh;
+      box-shadow: 0 8px 40px 0 rgba(0, 0, 0, 0.45);
+      background: #222;
+      object-fit: contain;
+      cursor: pointer;
+      transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+      opacity: 0;
+      transform: scale(0.96);
+    }
+
+    .lightbox-overlay.active .lightbox-img {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Custom row for images 30.2, 30.3, 31 above 32.jpg */
+    .gallery-masonry .optimized-image:nth-child(36) {
+      grid-column: 1;
+    }
+
+    .gallery-masonry .optimized-image:nth-child(37) {
+      grid-column: 2;
+    }
+
+    .gallery-masonry .optimized-image:nth-child(38) {
+      grid-column: 3;
+    }
+
+    .gallery-masonry .optimized-image:nth-child(39) {
+      grid-column: 1 / -1;
+      margin-top: 20px;
+    }
+
+
+
+    .gallery-masonry .optimized-image {
+      margin: -4px !important;
+    }
+
+    .gallery-section .container-fluid {
+      padding: 0;
+    }
+
+    .gallery-section {
+      display: block;
+      margin: 0;
+      padding: 0;
+      border: 0;
+      margin-top: 100px;
+      padding-left: 10vw;
+      padding-right: 10vw;
+      overflow: hidden;
+    }
+
+    .optimized-image {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .gallery-section .row,
+    .gallery-section .col-3,
+    .gallery-section .col-4,
+    .gallery-section .col-6,
+    .gallery-section .col-12 {
+      margin: -5px;
+      padding: 0;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- LOADING SCREEN -->
+  <div id="loader">
+    <h1>ZEK.ART</h1>
+  </div>
+
+  <!-- ACTUAL PAGE CONTENT -->
+  <div id="content" style="display: none;">
+    <!-- Navbar -->
+    <nav class="navbar">
+      <a href="index.html" class="logo">ZEK.ART</a>
+      <button class="hamburger" id="hamburger-btn" aria-label="Menu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+      <ul class="nav-links" id="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="production.html">Production</a></li>
+      </ul>
+    </nav>
+
+    <!-- Slide Menu -->
+    <div class="mobile-menu" id="mobile-menu">
+      <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="production.html">Production</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="https://www.instagram.com/zekakll?igsh=emlia3Z1d2NhcW44" target="_blank">Instagram</a></li>
+      </ul>
+    </div>
+    <!-- BACKGROUND ANIMATION REMOVED -->
+
+    <section class="gallery-section">
+      <div class="container-fluid p-0">
+
+        <div class="row g-0">
+          <div class="col-3"><img src="images/6.1.jpg" class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3"><img src="images/1.jpg" class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3" style="position: relative; right: 20px;"><img src="images/2.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3" style="position: relative; right: 40px;"><img src="images/3.2.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+        </div>
+
+        <div class="row g-0">
+          <div class="col-3 " style="position: relative; bottom: 80px;"><img src=" images/3.1.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3" style="position: relative; bottom: 60px;"><img src="images/4.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3" style="position: relative; bottom: 180px;"><img src="images/5.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3" style="position: relative; bottom: 180px;"><img src="images/5.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+        </div>
+
+        <div class="row g-0" style="position: relative; left: 10px;">
+          <div class="col-6" style="position: relative; bottom: 80px;">
+            <img src="images/7.jpg" class="img-fluid optimized-image w-100" loading="lazy" alt="">
+            <div class="row g-0" style="position: relative; left: 80px;">
+              <div class="col-auto">
+                <img src="images/10.jpg" style="width: 270px; height: 400px; position: relative; bottom: 10px;"
+                  loading="lazy" alt="">
+              </div>
+              <div class="col-auto">
+                <img src="images/10.jpg" style="width: 270px; height: 400px; position: relative; bottom: 10px;"
+                  loading="lazy" alt="">
+              </div>
+            </div>
+
+          </div>
+          <div class="col-3" style="position: relative; bottom: 200px;"><img src="images/8.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3" style="position: relative; bottom: 200px;"><img src="images/1.1.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+        </div>
+
+        <div class="row g-0">
+          <div class="col-3"><img src="images/100.jpg" class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3"><img src="images/11.jpg" class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3" style="position: relative; bottom: 380px;"><img src="images/12.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3" style="position: relative; bottom: 430px;"><img src="images/16.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+        </div>
+
+        <div class="row g-0">
+          <div class="col-3" style="position: relative; bottom: 600px;"><img src="images/5.2.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3" style="position: relative; bottom: 600px;"><img src="images/14.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3" style="position: relative; bottom: 600px;"><img src="images/15.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3" style="position: relative; bottom: 500px;"> <img src="images/15.2.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+        </div>
+
+        <div class="row g-0" style="position: relative; left: 40px;">
+          <div class="col-3" style="position: relative; bottom: 700px;"><img src="images/18.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3" style="position: relative; bottom: 700px;"><img src="images/19.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3"><img src="images/degisecek.jpg" class="img-fluid optimized-image w-100" loading="lazy"
+              alt=""></div>
+          <div class="col-3"><img src="images/degiseceek.jpg" class="img-fluid optimized-image w-100" loading="lazy"
+              alt=""></div>
+        </div>
+
+        <div class="row g-0">
+          <div class="col-3" style="position: relative; bottom: 800px;"><img src="images/20.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3" style="position: relative; bottom: 800px;"><img src="images/21.5.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3" style="position: relative; bottom: 1050px;"><img src="images/22.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3" style="position: relative; bottom: 1050px;"><img src="images/1.1.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+        </div>
+
+        <div class="row g-0">
+          <div class="col-3" style="position: relative; bottom: 930px;"><img src="images/23.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3" style="position: relative; bottom: 920px;"><img src="images/24.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3" style="position: relative; bottom: 1100px;"><img src="images/25.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-3" style="position: relative; bottom: 1200px;"><img src="images/25.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+        </div>
+
+        <div class="row g-0">
+          <div class="col-4" style="position: relative; bottom: 940px;">
+            <img src="images/26.jpg" class="img-fluid optimized-image w-100" loading="lazy" alt="">
+            <img style="position: relative; bottom: 80px;" src="images/27.6.jpg" class="img-fluid optimized-image w-100"
+              loading="lazy" alt="">
+          </div>
+          <div class="col-4" style="position: relative; bottom: 1100px;"><img src="images/27.4.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-4" style="position: relative; bottom: 1100px;">
+            <img src="images/27.5.jpg" class="img-fluid optimized-image w-100" loading="lazy" alt="">
+            <img src="images/27.7.jpg" style="position: relative; bottom: 80px;" class="img-fluid optimized-image w-100"
+              loading="lazy" alt="">
+          </div>
+        </div>
+
+        <div class="row g-0" style="transform: translateY(-1050px);">
+          <div class="col-4" style="position: relative; bottom: 20px;"><img src="images/27.9.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-4" style="position: relative; bottom: 350px;"><img src="images/28.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-4" style="position: relative; bottom: 200px;"><img src="images/29.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+        </div>
+
+        <div class="row g-0" style="transform: translateY(-1300px);">
+          <div class="col-4" style="position: relative; bottom: 00px;"><img src="images/30.3.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-4" style="position: relative; bottom: 150px;"><img src="images/30.2.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+          <div class="col-4" style="position: relative; bottom: 100px;"><img src="images/31.jpg"
+              class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+        </div>
+
+        <div class="row g-0" style="transform: translateY(-1450px);">
+          <div class="col-12"><img src="images/32.jpg" class="img-fluid optimized-image w-100" loading="lazy" alt="">
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Pagination controls removed -->
+
+    <!-- LIGHTBOX OVERLAY -->
+    <div class="lightbox-overlay" id="lightbox-overlay">
+      <img src="" class="lightbox-img" id="lightbox-img" alt="">
+    </div>
+  </div>
+
+
+  <script src="js/script.js"></script>
+  <script src="js/scrollAnim.js" defer></script>
+
+  <script>
+    const menuBtn = document.getElementById("hamburger-btn");
+    const mobileMenu = document.getElementById("mobile-menu");
+
+    menuBtn.addEventListener("click", () => {
+      mobileMenu.classList.toggle("show");
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!mobileMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+        mobileMenu.classList.remove("show");
+      }
+    });
+
+    // --- MASONRY GALLERY ANIMATION AND LIGHTBOX ---
+    const masonryImages = document.querySelectorAll('.optimized-image');
+
+    // Image loading animation
+    masonryImages.forEach(img => {
+      img.addEventListener('load', () => {
+        img.classList.add('loaded');
+      });
+
+      // Fallback for already loaded images
+      if (img.complete) {
+        img.classList.add('loaded');
+      }
+    });
+
+    // Intersection Observer for staggered animation
+    const observer = new window.IntersectionObserver((entries) => {
+      entries.forEach((entry, index) => {
+        if (entry.isIntersecting) {
+          setTimeout(() => {
+            entry.target.classList.add('visible');
+          }, index * 50);
+        }
+      });
+    }, { threshold: 0.1 });
+
+    masonryImages.forEach(img => {
+      observer.observe(img);
+    });
+
+    // Lightbox functionality
+    const lightboxOverlay = document.getElementById("lightbox-overlay");
+    const lightboxImg = document.getElementById("lightbox-img");
+
+    masonryImages.forEach(img => {
+      img.addEventListener("click", () => {
+        lightboxImg.src = img.src;
+        lightboxOverlay.classList.add("active");
+      });
+    });
+    lightboxImg.addEventListener("click", () => {
+      lightboxOverlay.classList.remove("active");
+    });
+
+  </script>
+
+</body>
+
+</html>

@@ -1,0 +1,171 @@
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Playfair Display', serif;
+    background: #111;
+    color: #fff;
+}
+
+main {
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+
+.gallery-custom {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+/* Grid of 3 columns x 2 rows */
+.grid-3x2 {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+}
+
+.grid-3x2 .image-container {
+    margin-bottom: 0;
+    /* reset the -3px overlap for tight grid */
+}
+
+/* Full-width image */
+.full-width {
+    width: 100%;
+    margin-bottom: 0;
+}
+
+.full-width img {
+    width: 100%;
+    object-fit: cover;
+    border-radius: 12px;
+}
+
+
+.gallery-masonry {
+    column-count: 3;
+    column-gap: 18px;
+    width: 100%;
+}
+
+@media (max-width: 1000px) {
+    .gallery-masonry {
+        column-count: 2;
+    }
+}
+
+@media (max-width: 600px) {
+    .gallery-masonry {
+        column-count: 1;
+    }
+}
+
+.image-container {
+    break-inside: avoid;
+    margin-bottom: -3px;
+    position: relative;
+    width: 100%;
+    display: inline-block;
+    background: transparent;
+    border-radius: 0;
+    overflow: visible;
+    box-shadow: none;
+    padding: 0;
+}
+
+
+.image-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    z-index: 1;
+}
+
+@keyframes shimmer {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.optimized-image {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    opacity: 0;
+    transform: translateY(30px);
+    position: relative;
+    z-index: 2;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.12);
+    transition: transform 3s ease, opacity 3s ease;
+}
+
+.optimized-image.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.optimized-image:hover {
+    transform: scale(1.03);
+    z-index: 10;
+    transition: transform 0.5s ease;
+}
+
+
+
+/* Remove aspect ratio placeholder padding from .image-placeholder */
+.image-placeholder {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+    background-size: 200% 100%;
+    animation: loading 1.5s infinite;
+    z-index: 1;
+}
+
+@keyframes loading {
+    0% {
+        background-position: -200% 0;
+    }
+
+    100% {
+        background-position: 200% 0;
+    }
+}
+
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    border: 0;
+}
+
+.image-container .failed {
+    color: #ff4d4f;
+    background: #222;
+    text-align: center;
+    padding: 1.5rem 0.5rem;
+    font-size: 1.1rem;
+    border-radius: 12px;
+    min-height: 120px;
+    z-index: 3;
+    position: relative;
+}
